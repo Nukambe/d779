@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D779 - Wesley Chappell</title>
+</head>
+<body style="width: 600px; margin: auto; padding: 16px; border: 1px solid black; height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px;">
+  <header style="display: flex; justify-content: space-between;">
+    <h1>ACCOUNTS</h1>
+    <button>Login / Logout</button>
+  </header>
+
+  <main id="account-list" style="flex-grow: 1; display: flex; flex-direction: column; gap: 16px;">
+    <!-- Accounts will be injected here -->
+  </main>
+
+  <footer style="width: 100%; display: flex; justify-content: space-around;">
+    <a href="index.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Accounts
+    </a>
+    <a href="pay.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Pay Bills
+    </a>
+    <a href="transfer.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Transfer Money
+    </a>
+    <a href="settings.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Settings
+    </a>
+    <a href="support.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Support
+    </a>
+  </footer>
+
+  <script>
+    // Define the array of accounts
+    const accounts = [
+      { number: "1234567890", balance: "$2,000.00" },
+      { number: "0987654321", balance: "$3,000.00" },
+      { number: "1592634875", balance: "$986.00" }
+    ];
+
+    const accountList = document.getElementById("account-list");
+
+    // Loop through each account and create its button
+    accounts.forEach(account => {
+      const btn = document.createElement("button");
+      btn.style.cssText = `
+        max-width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+        background-color: lightgray;
+        padding: 8px;
+        cursor: pointer;
+      `;
+
+      btn.innerHTML = `
+        <div style="display: flex; flex-direction: column;">
+          <span>${account.number}</span>
+          <span style="font-size: 28pt;">${account.balance}</span>
+        </div>
+        <div>
+          <button>HISTORY</button>
+        </div>
+      `;
+
+      // Navigate to account.html#account-number on click
+      btn.addEventListener("click", () => {
+        window.location.href = `account.html#${account.number}`;
+      });
+
+      accountList.appendChild(btn);
+    });
+  </script>
+</body>
+</html>

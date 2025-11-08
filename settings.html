@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>D779 - Wesley Chappell</title>
+</head>
+<body style="width: 600px; margin: auto; padding: 16px; border: 1px solid black; height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px;">
+  <header style="display: flex; justify-content: space-between;">
+    <h1>SETTINGS</h1>
+    <button>Login / Logout</button>
+  </header>
+
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 16px;">
+    <!-- Profile -->
+    <section style="display: flex; flex-direction: column; gap: 8px;">
+      <h2 style="margin: 0; font-size: 14pt;">Profile</h2>
+      <label>
+        Name
+        <input id="name" type="text" placeholder="Your name"
+               style="height: 36px; font-size: 12pt; padding: 4px; width: 100%;"/>
+      </label>
+      <label>
+        Email
+        <input id="email" type="email" placeholder="you@example.com"
+               style="height: 36px; font-size: 12pt; padding: 4px; width: 100%;"/>
+      </label>
+      <label>
+        Phone
+        <input id="phone" type="tel" placeholder="(555) 555-5555"
+               style="height: 36px; font-size: 12pt; padding: 4px; width: 100%;"/>
+      </label>
+    </section>
+
+    <!-- Preferences -->
+    <section style="display: flex; flex-direction: column; gap: 8px;">
+      <h2 style="margin: 0; font-size: 14pt;">Preferences</h2>
+      <label>
+        Theme
+        <select id="theme" style="height: 40px; font-size: 12pt;">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="system">System</option>
+        </select>
+      </label>
+
+      <label>
+        Default From Account
+        <select id="default-account" style="height: 40px; font-size: 12pt;"></select>
+      </label>
+
+      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+        <label style="display: flex; align-items: center; gap: 6px;">
+          <input id="notif-email" type="checkbox"/> Email notifications
+        </label>
+        <label style="display: flex; align-items: center; gap: 6px;">
+          <input id="notif-sms" type="checkbox"/> SMS notifications
+        </label>
+        <label style="display: flex; align-items: center; gap: 6px;">
+          <input id="notif-push" type="checkbox"/> Push notifications
+        </label>
+      </div>
+    </section>
+
+    <!-- Security -->
+    <section style="display: flex; flex-direction: column; gap: 8px;">
+      <h2 style="margin: 0; font-size: 14pt;">Security</h2>
+      <label>
+        New Password
+        <input id="password" type="password" placeholder="Enter new password"
+               style="height: 36px; font-size: 12pt; padding: 4px; width: 100%;"/>
+      </label>
+      <label>
+        Confirm Password
+        <input id="password2" type="password" placeholder="Confirm new password"
+               style="height: 36px; font-size: 12pt; padding: 4px; width: 100%;"/>
+      </label>
+      <div style="color: darkred; min-height: 20px;" id="error"></div>
+    </section>
+
+    <div style="display: flex; gap: 8px; margin-top: auto;">
+      <button id="save" style="height: 44px;">Save</button>
+      <button id="reset" style="height: 44px;">Reset to Defaults</button>
+    </div>
+  </main>
+
+  <footer style="width: 100%; display: flex; justify-content: space-around;">
+    <a href="index.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Accounts
+    </a>
+    <a href="pay.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Pay Bills
+    </a>
+    <a href="transfer.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Transfer Money
+    </a>
+    <a href="settings.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Settings
+    </a>
+    <a href="support.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Support
+    </a>
+  </footer>
+
+  <script>
+    // Shared account data (keep consistent with your other pages)
+    const accounts = [
+      { number: "1234567890", balance: "$2,000.00" },
+      { number: "0987654321", balance: "$3,000.00" },
+      { number: "1592634875", balance: "$986.00" },
+    ];
+
+    // Elements
+    const $ = (id) => document.getElementById(id);
+    const nameEl = $("name");
+    const emailEl = $("email");
+    const phoneEl = $("phone");
+    const themeEl = $("theme");
+    const defaultAccEl = $("default-account");
+    const notifEmailEl = $("notif-email");
+    const notifSmsEl = $("notif-sms");
+    const notifPushEl = $("notif-push");
+    const passEl = $("password");
+    const pass2El = $("password2");
+    const errorEl = $("error");
+    const saveBtn = $("save");
+    const resetBtn = $("reset");
+
+    // Populate account dropdown
+    accounts.forEach(acc => {
+      const opt = document.createElement("option");
+      opt.value = acc.number;
+      opt.textContent = acc.number;
+      defaultAccEl.appendChild(opt);
+    });
+
+    // Default settings
+    const DEFAULTS = {
+      name: "",
+      email: "",
+      phone: "",
+      theme: "light",
+      defaultAccount: accounts[0]?.number || "",
+      notifEmail: true,
+      notifSms: false,
+      notifPush: false,
+    };
+
+    // Load settings from localStorage or defaults
+    function loadSettings() {
+      const raw = localStorage.getItem("app_settings");
+      const settings = raw ? { ...DEFAULTS, ...JSON.parse(raw) } : { ...DEFAULTS };
+
+      nameEl.value = settings.name;
+      emailEl.value = settings.email;
+      phoneEl.value = settings.phone;
+      themeEl.value = settings.theme;
+      defaultAccEl.value = settings.defaultAccount || DEFAULTS.defaultAccount;
+      notifEmailEl.checked = !!settings.notifEmail;
+      notifSmsEl.checked = !!settings.notifSms;
+      notifPushEl.checked = !!settings.notifPush;
+
+      applyTheme(settings.theme);
+    }
+
+    // Save to localStorage
+    function saveSettings() {
+      errorEl.textContent = "";
+
+      // Basic validation
+      if (emailEl.value && !/^\S+@\S+\.\S+$/.test(emailEl.value)) {
+        errorEl.textContent = "Please enter a valid email address.";
+        return false;
+      }
+      if (passEl.value || pass2El.value) {
+        if (passEl.value !== pass2El.value) {
+          errorEl.textContent = "Passwords do not match.";
+          return false;
+        }
+        // In a real app, you'd submit this securely to an API
+      }
+
+      const settings = {
+        name: nameEl.value.trim(),
+        email: emailEl.value.trim(),
+        phone: phoneEl.value.trim(),
+        theme: themeEl.value,
+        defaultAccount: defaultAccEl.value,
+        notifEmail: notifEmailEl.checked,
+        notifSms: notifSmsEl.checked,
+        notifPush: notifPushEl.checked,
+      };
+
+      localStorage.setItem("app_settings", JSON.stringify(settings));
+      applyTheme(settings.theme);
+      alert("Settings saved.");
+      passEl.value = "";
+      pass2El.value = "";
+      return true;
+    }
+
+    // Reset to defaults
+    function resetSettings() {
+      localStorage.removeItem("app_settings");
+      loadSettings();
+      alert("Settings reset to defaults.");
+    }
+
+    // Apply theme (simple inline approach for your current styling)
+    function applyTheme(theme) {
+      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const resolved = theme === "system" ? (prefersDark ? "dark" : "light") : theme;
+
+      if (resolved === "dark") {
+        document.body.style.backgroundColor = "#1f1f1f";
+        document.body.style.color = "#f0f0f0";
+      } else {
+        document.body.style.backgroundColor = "#ffffff";
+        document.body.style.color = "#000000";
+      }
+    }
+
+    // Events
+    saveBtn.addEventListener("click", saveSettings);
+    resetBtn.addEventListener("click", resetSettings);
+    themeEl.addEventListener("change", (e) => applyTheme(e.target.value));
+
+    // Init
+    loadSettings();
+  </script>
+</body>
+</html>

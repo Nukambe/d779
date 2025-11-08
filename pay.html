@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>D779 - Wesley Chappell</title>
+</head>
+<body
+  style="width: 600px; margin: auto; padding: 16px; border: 1px solid black; height: 100vh; box-sizing: border-box; display: flex; flex-direction: column;"
+>
+  <header style="display: flex; justify-content: space-between;">
+    <h1>PAY BILLS</h1>
+    <button>Login / Logout</button>
+  </header>
+
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 16px;">
+    <label for="account-select">Pay From Account:</label>
+    <select id="account-select" style="height: 40px; font-size: 14pt;"></select>
+
+    <div id="account-balance" style="font-size: 16pt; font-weight: bold;"></div>
+
+    <label for="payee-select">Payee:</label>
+    <select id="payee-select" style="height: 40px; font-size: 14pt;"></select>
+
+    <label for="frequency-select">Frequency:</label>
+    <select id="frequency-select" style="height: 40px; font-size: 14pt;">
+      <option value="one-time">One-time</option>
+      <option value="weekly">Weekly</option>
+      <option value="biweekly">Biweekly</option>
+      <option value="monthly">Monthly</option>
+    </select>
+
+    <label for="amount-input">Amount:</label>
+    <input
+      id="amount-input"
+      type="number"
+      min="0.01"
+      step="0.01"
+      placeholder="0.00"
+      style="height: 40px; font-size: 14pt; padding: 4px;"
+    />
+
+    <div id="error" style="color: darkred; min-height: 20px;"></div>
+
+    <button id="pay-button" style="margin-top: 8px; height: 48px;">Submit Payment</button>
+  </main>
+
+  <footer
+    style="width: 100%; display: flex; justify-content: space-around;"
+  >
+    <a
+      href="index.html"
+      style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;"
+    >
+      Accounts
+    </a>
+    <a
+      href="pay.html"
+      style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;"
+    >
+      Pay Bills
+    </a>
+    <a
+      href="transfer.html"
+      style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;"
+    >
+      Transfer Money
+    </a>
+    <a
+        href="settings.html"
+      style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;"
+    >
+      Settings
+    </a>
+    <a
+      href="support.html"
+      style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;"
+    >
+      Support
+    </a>
+  </footer>
+
+  <script>
+    // Shared account data
+    const accounts = [
+      {
+        number: "1234567890",
+        balance: "$2,000.00",
+        transactions: [
+          { date: "2025-11-01", desc: "Deposit", amount: "+$1,000.00" },
+          { date: "2025-11-03", desc: "Groceries", amount: "-$75.00" },
+        ],
+      },
+      {
+        number: "0987654321",
+        balance: "$3,000.00",
+        transactions: [
+          { date: "2025-11-02", desc: "Transfer from 1234567890", amount: "+$500.00" },
+          { date: "2025-11-04", desc: "Bill Payment", amount: "-$120.00" },
+        ],
+      },
+      {
+        number: "1592634875",
+        balance: "$986.00",
+        transactions: [
+          { date: "2025-11-03", desc: "ATM Withdrawal", amount: "-$100.00" },
+          { date: "2025-11-05", desc: "Direct Deposit", amount: "+$300.00" },
+        ],
+      },
+    ];
+
+    // Example payees
+    const payees = [
+      { id: "util-001", name: "Internet" },
+      { id: "net-002", name: "Electricity" },
+      { id: "cc-003", name: "Gas" },
+      { id: "rent-004", name: "Rent" },
+    ];
+
+    const $ = (id) => document.getElementById(id);
+    const selectAccount = $("account-select");
+    const balanceDisplay = $("account-balance");
+    const selectPayee = $("payee-select");
+    const selectFrequency = $("frequency-select");
+    const inputAmount = $("amount-input");
+    const payButton = $("pay-button");
+    const error = $("error");
+
+    // Populate accounts
+    accounts.forEach((acc) => {
+      const option = document.createElement("option");
+      option.value = acc.number;
+      option.textContent = acc.number;
+      selectAccount.appendChild(option);
+    });
+
+    // Populate payees
+    payees.forEach((p) => {
+      const option = document.createElement("option");
+      option.value = p.id;
+      option.textContent = p.name;
+      selectPayee.appendChild(option);
+    });
+
+    function getSelectedAccount() {
+      return accounts.find((a) => a.number === selectAccount.value);
+    }
+
+    function updateBalance() {
+      const selected = getSelectedAccount();
+      balanceDisplay.textContent = selected ? `Balance: ${selected.balance}` : "";
+    }
+
+    function formatCurrency(n) {
+      const num = Number(n);
+      if (Number.isNaN(num)) return "";
+      return num.toLocaleString(undefined, { style: "currency", currency: "USD" });
+    }
+
+    function validate() {
+      error.textContent = "";
+      const amount = Number(inputAmount.value);
+      if (!selectAccount.value) {
+        error.textContent = "Please select an account.";
+        return false;
+      }
+      if (!selectPayee.value) {
+        error.textContent = "Please select a payee.";
+        return false;
+      }
+      if (!selectFrequency.value) {
+        error.textContent = "Please select a frequency.";
+        return false;
+      }
+      if (!inputAmount.value || Number.isNaN(amount) || amount <= 0) {
+        error.textContent = "Please enter a valid amount greater than 0.";
+        return false;
+      }
+      return true;
+    }
+
+    selectAccount.addEventListener("change", updateBalance);
+    updateBalance();
+
+    payButton.addEventListener("click", () => {
+      if (!validate()) return;
+
+      const acc = getSelectedAccount();
+      const payeeText = selectPayee.options[selectPayee.selectedIndex].textContent;
+      const frequencyText = {
+        "one-time": "One-time",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "monthly": "Monthly",
+      }[selectFrequency.value] || selectFrequency.value;
+
+      const amountText = formatCurrency(inputAmount.value);
+
+      alert(
+        `Confirm Payment\n\n` +
+        `From: ${acc.number}\n` +
+        `To: ${payeeText}\n` +
+        `Frequency: ${frequencyText}\n` +
+        `Amount: ${amountText}`
+      );
+    });
+  </script>
+</body>
+</html>

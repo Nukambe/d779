@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>D779 - Wesley Chappell</title>
+</head>
+<body
+  style="width: 600px; margin: auto; padding: 16px; border: 1px solid black; height: 100vh; box-sizing: border-box; display: flex; flex-direction: column;"
+>
+  <header style="display: flex; justify-content: space-between;">
+    <h1>TRANSFER MONEY</h1>
+    <button>Login / Logout</button>
+  </header>
+
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 16px;">
+    <label for="from-select">From Account:</label>
+    <select id="from-select" style="height: 40px; font-size: 14pt;"></select>
+
+    <label for="to-select">To Account:</label>
+    <select id="to-select" style="height: 40px; font-size: 14pt;"></select>
+
+    <label for="other-input">Or Enter Another Account Number:</label>
+    <input
+      id="other-input"
+      type="text"
+      placeholder="Recipient account number"
+      style="height: 40px; font-size: 14pt; padding: 4px;"
+    />
+
+    <label for="amount-input">Amount:</label>
+    <input
+      id="amount-input"
+      type="number"
+      min="0.01"
+      step="0.01"
+      placeholder="0.00"
+      style="height: 40px; font-size: 14pt; padding: 4px;"
+    />
+
+    <div id="error" style="color: darkred; min-height: 20px;"></div>
+
+    <button id="transfer-button" style="margin-top: 8px; height: 48px;">
+      Submit Transfer
+    </button>
+  </main>
+
+  <footer
+    style="width: 100%; display: flex; justify-content: space-around;"
+  >
+    <a
+      href="index.html"
+      style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;"
+    >
+      Accounts
+    </a>
+    <a
+      href="pay.html"
+      style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;"
+    >
+      Pay Bills
+    </a>
+    <a
+      href="transfer.html"
+      style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;"
+    >
+      Transfer Money
+    </a>
+    <a
+        href="settings.html"
+      style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;"
+    >
+      Settings
+    </a>
+    <a
+      href="support.html"
+      style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;"
+    >
+      Support
+    </a>
+  </footer>
+
+  <script>
+    // Shared account data
+    const accounts = [
+      {
+        number: "1234567890",
+        balance: "$2,000.00",
+      },
+      {
+        number: "0987654321",
+        balance: "$3,000.00",
+      },
+      {
+        number: "1592634875",
+        balance: "$986.00",
+      },
+    ];
+
+    const $ = (id) => document.getElementById(id);
+    const fromSelect = $("from-select");
+    const toSelect = $("to-select");
+    const otherInput = $("other-input");
+    const amountInput = $("amount-input");
+    const transferButton = $("transfer-button");
+    const error = $("error");
+
+    // Populate From and To dropdowns
+    accounts.forEach((acc) => {
+      const fromOption = document.createElement("option");
+      fromOption.value = acc.number;
+      fromOption.textContent = acc.number;
+      fromSelect.appendChild(fromOption);
+
+      const toOption = document.createElement("option");
+      toOption.value = acc.number;
+      toOption.textContent = acc.number;
+      toSelect.appendChild(toOption);
+    });
+
+    function validate() {
+      error.textContent = "";
+      const from = fromSelect.value;
+      const to = toSelect.value;
+      const other = otherInput.value.trim();
+      const amount = Number(amountInput.value);
+
+      if (!from) {
+        error.textContent = "Please select a 'From' account.";
+        return false;
+      }
+      if (!to && !other) {
+        error.textContent = "Select or enter a 'To' account.";
+        return false;
+      }
+      if (to === from && !other) {
+        error.textContent = "Cannot transfer to the same account.";
+        return false;
+      }
+      if (!amount || isNaN(amount) || amount <= 0) {
+        error.textContent = "Please enter a valid amount greater than 0.";
+        return false;
+      }
+      return true;
+    }
+
+    transferButton.addEventListener("click", () => {
+      if (!validate()) return;
+
+      const from = fromSelect.value;
+      const to = otherInput.value.trim() || toSelect.value;
+      const amount = Number(amountInput.value).toLocaleString(undefined, {
+        style: "currency",
+        currency: "USD",
+      });
+
+      alert(
+        `Confirm Transfer\n\nFrom: ${from}\nTo: ${to}\nAmount: ${amount}`
+      );
+    });
+  </script>
+</body>
+</html>

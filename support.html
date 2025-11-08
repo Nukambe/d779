@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>D779 - Wesley Chappell</title>
+</head>
+<body style="width: 600px; margin: auto; padding: 16px; border: 1px solid black; height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px;">
+  <header style="display: flex; justify-content: space-between;">
+    <h1>SUPPORT</h1>
+    <button>Login / Logout</button>
+  </header>
+
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 16px;">
+    <section>
+      <h2 style="margin: 0 0 8px 0; font-size: 14pt;">Hours</h2>
+      <div id="hours-list" style="display: flex; flex-direction: column; gap: 6px;">
+        <!-- Hours will be injected here -->
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 8px;">
+      <span style="font-weight: bold;">Email Inquiries</span>
+      <a id="support-email" href="mailto:support@examplebank.com" style="color: blue;">support@examplebank.com</a>
+      <button id="connect-agent" style="height: 40px; width: fit-content;">Connect with an agent</button>
+    </section>
+  </main>
+
+  <footer style="width: 100%; display: flex; justify-content: space-around;">
+    <a href="index.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Accounts
+    </a>
+    <a href="pay.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Pay Bills
+    </a>
+    <a href="transfer.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Transfer Money
+    </a>
+    <a href="settings.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Settings
+    </a>
+    <a href="support.html" style="text-decoration: none; background-color: lightgray; height: 100%; width: 100%; border: 1px solid black; display: flex; justify-content: center; align-items: center;">
+      Support
+    </a>
+  </footer>
+
+  <!-- Floating Chatbot Button -->
+  <button id="chatbot-fab"
+    title="Chat with Support"
+    style="position: fixed; right: 24px; bottom: 24px; width: 56px; height: 56px; border-radius: 50%;
+           border: 1px solid black; background: lightgray; display: flex; align-items: center; justify-content: center;
+           font-size: 20pt; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+    💬
+  </button>
+
+  <script>
+    // Support hours data (loop will render these)
+    const hours = [
+      { day: "S", label: "Sun", open: false, text: "CLOSED" },
+      { day: "M", label: "Mon", open: true,  text: "9a–5p" },
+      { day: "T", label: "Tue", open: true,  text: "9a–5p" },
+      { day: "W", label: "Wed", open: true,  text: "9a–5p" },
+      { day: "T", label: "Thu", open: true, text: "9a–5p" },
+      { day: "F", label: "Fri", open: true,  text: "9a–5p" },
+      { day: "S", label: "Sat", open: false, text: "9a-12p" },
+    ];
+
+    const hoursList = document.getElementById("hours-list");
+
+    // Render each day's hours
+    hours.forEach(h => {
+      const row = document.createElement("div");
+      row.style.cssText = "display: flex; justify-content: space-between; border: 1px solid #ccc; padding: 6px 8px; background-color: #f7f7f7;";
+      const left = document.createElement("span");
+      left.textContent = `${h.day}:`;
+      const right = document.createElement("span");
+      right.textContent = h.text;
+      right.style.fontWeight = h.open ? "normal" : "bold";
+      row.appendChild(left);
+      row.appendChild(right);
+      hoursList.appendChild(row);
+    });
+
+    // Connect with an agent (placeholder)
+    document.getElementById("connect-agent").addEventListener("click", () => {
+      alert("Connecting you to an agent…");
+    });
+
+    // Floating chatbot button (placeholder)
+    document.getElementById("chatbot-fab").addEventListener("click", () => {
+      alert("Opening chatbot…");
+    });
+  </script>
+</body>
+</html>
